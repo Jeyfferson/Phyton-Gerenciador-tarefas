@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gerenciador de Tarefas</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            background-color: #f2f4f7;
+            font-family: Arial, sans-serif;
+            color: #222;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .form-adicionar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .form-adicionar input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-adicionar {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-concluir {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .btn-excluir {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .tarefa {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 14px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .titulo-tarefa {
+            flex: 1;
+            font-size: 17px;
+        }
+
+        .concluida {
+            color: #777;
+            text-decoration: line-through;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 8px;
+        }
+
+        .vazio {
+            color: #777;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .form-adicionar {
+                flex-direction: column;
+            }
+
+            .tarefa {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .acoes {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>Minhas Tarefas</h1>
+
+        <form class="form-adicionar" action="{{ url_for('adicionar') }}" method="POST">
+            <input
+                type="text"
+                name="titulo"
+                placeholder="Digite uma nova tarefa"
+                required
+            >
+
+            <button class="btn-adicionar" type="submit">
+                Adicionar
+            </button>
+        </form>
+
+        {% if tarefas %}
+            {% for tarefa in tarefas %}
+                <div class="tarefa">
+                    <span class="titulo-tarefa {% if tarefa['concluida'] %}concluida{% endif %}">
+                        {{ tarefa['titulo'] }}
+                    </span>
+
+                    <div class="acoes">
+                        <form action="{{ url_for('concluir', tarefa_id=tarefa['id']) }}" method="POST">
+                            <button class="btn-concluir" type="submit">
+                                {% if tarefa['concluida'] %}
+                                    Reabrir
+                                {% else %}
+                                    Concluir
+                                {% endif %}
+                            </button>
+                        </form>
+
+                        <form action="{{ url_for('excluir', tarefa_id=tarefa['id']) }}" method="POST">
+                            <button class="btn-excluir" type="submit">
+                                Excluir
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="vazio">Nenhuma tarefa cadastrada.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
